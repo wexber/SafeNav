@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/fondo">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
+
+        android:contentDescription="@string/logo_description" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/bondrians"
+        android:gravity="center_horizontal"
+        android:text="@string/safe_nav_title"
+        android:textColor="@color/Menu"
+        android:textSize="60sp" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/login_instruction"
+        android:textColor="@color/Title"
+        android:textSize="20sp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="25dp"
+        android:hint="@string/hint_email"
+        android:inputType="textEmailAddress"
+        android:textSize="15sp"
+        android:autofillHints="emailAddress"
+        android:background="@drawable/edittext" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="25dp"
+        android:hint="@string/hint_password"
+        android:inputType="textPassword"
+        android:textSize="15sp"
+        android:autofillHints="password"
+        android:background="@drawable/edittext" />
+
+    <Button
+        android:id="@+id/tv_go_to_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="@color/Menu"
+        android:text="@string/button_login"
+        android:textColor="@color/Background"
+        android:background="@drawable/rounded_button" />
+
+    <TextView
+        android:id="@+id/tv_go_to_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
+        android:text="@string/no_account_text"
+        android:textColor="@color/Title" />
+
+</LinearLayout>

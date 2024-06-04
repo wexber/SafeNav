@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">SafeNav</string>
+    <string name="hint_email">Correo Electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="button_login">Iniciar Sesión</string>
+    <string name="no_account_text">¿No tiene una cuenta?</string>
+    <string name="logo_description">Logotipo de SAFENAV</string>
+    <string name="safe_nav_title">SafeNav</string>
+    <string name="login_instruction">Ingresa tu correo y contraseña</string>
+
+
+    <string name="resgister_instruction">Completa este formulario</string>
+    <string name="hint_NAME">Nombre y apellido</string>
+
+    <string name="hint_repPassword">Repetir contraseña</string>
+    <string name="button_register">Registrarse</string>
+    <string name="volver_login">Volver al Login</string>
+
+
+    <string name="start_title">Inicio</string>
+
+
+    <string name="button_navegar">Navegar</string>
+
+    <string name="button_ubicacion">Ubicación</string>
+
+    <string name="button_routes">Historial Rutas</string>
+
+    <string name="button_ajustes">Ajustes</string>
+</resources>
