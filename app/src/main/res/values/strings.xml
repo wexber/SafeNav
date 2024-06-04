@@ -25,6 +25,7 @@
     <string name="button_ubicacion">Ubicación</string>
 
     <string name="button_routes">Historial Rutas</string>
+    <string name="button_route">Rutas</string>
 
     <string name="button_ajustes">Ajustes</string>
 </resources>

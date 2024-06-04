@@ -13,9 +13,12 @@
         android:theme="@style/Theme.SafeNav"
         tools:targetApi="31">
         <activity
+            android:name=".NavegarActivity"
+            android:exported="false" />
+        <activity
             android:name=".MenuActivity"
             android:exported="false"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance" />
         <activity
             android:name=".RegistroActivity"
             android:exported="false"
@@ -24,8 +27,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.SafeNav"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.SafeNav">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
