@@ -18,7 +18,7 @@ import com.example.safenav.ui.theme.SafeNavTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.MainActivity)
+        setContentView(R.layout.activity_main)
 
         val tvGoRegister = findViewById<TextView>(R.id.tv_go_to_register)
         tvGoRegister.setOnClickListener{
