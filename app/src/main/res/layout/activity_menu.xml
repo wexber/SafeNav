@@ -18,7 +18,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             tools:ignore="UseCompoundDrawables">
-
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -27,10 +26,9 @@
                 android:gravity="start"
                 android:src="@drawable/salir"
                 android:layout_marginStart="15dp" />
-
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="15dp"
                 android:fontFamily="@font/bondrians"
                 android:gravity="center_horizontal"
@@ -38,15 +36,13 @@
                 android:textColor="@color/Menu"
                 android:textSize="60sp"
                 android:layout_marginStart="70dp" />
-
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_marginTop="15dp"
                 android:contentDescription="@string/logo_description"
                 android:gravity="end"
-                android:src="@drawable/SAFENAV" />
-
+                android:src="@drawable/logo" />
         </LinearLayout>
 
         <LinearLayout

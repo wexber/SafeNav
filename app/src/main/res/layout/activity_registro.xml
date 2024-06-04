@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/fondo">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="300dp"
-        android:contentDescription="@string/logo_description"
-        android:gravity="start"
-        android:src="@drawable/SAFENAV" />
-
-    <TextView
-        android:id="@+id/textView6"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:fontFamily="@font/bondrians"
-        android:gravity="center_horizontal"
-        android:text="@string/safe_nav_title"
-        android:textColor="@color/Menu"
-        android:textSize="60sp"/>
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="30dp"
+            android:contentDescription="@string/logo_description"
+            android:gravity="start"
+            android:src="@drawable/salir"
+            android:layout_marginStart="15dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/bondrians"
+            android:gravity="center_horizontal"
+            android:text="@string/safe_nav_title"
+            android:textColor="@color/Menu"
+            android:textSize="60sp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_marginTop="15dp"
+            android:contentDescription="@string/logo_description"
+            android:gravity="end"
+            android:src="@drawable/logo" />
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/textView7"
-        android:layout_width="wrap_content"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_marginTop="30dp"
@@ -39,7 +55,7 @@
         android:textSize="20sp" />
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="50dp"
@@ -48,10 +64,12 @@
         android:inputType="textPersonName"
         android:textSize="15sp"
         android:autofillHints="emailAddress"
-        android:background="@drawable/edittext" />
+        android:background="@drawable/edittext"
+        android:textColorHint="@color/black"
+        android:padding="8dp"/>
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="15dp"
@@ -60,10 +78,12 @@
         android:inputType="textEmailAddress"
         android:textSize="15sp"
         android:autofillHints="emailAddress"
-        android:background="@drawable/edittext" />
+        android:background="@drawable/edittext"
+        android:textColorHint="@color/black"
+        android:padding="8dp" />
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="15dp"
@@ -72,10 +92,12 @@
         android:inputType="textPassword"
         android:textSize="15sp"
         android:autofillHints="password"
-        android:background="@drawable/edittext" />
+        android:background="@drawable/edittext"
+        android:textColorHint="@color/black"
+        android:padding="8dp" />
 
     <EditText
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="15dp"
@@ -84,25 +106,29 @@
         android:inputType="textPassword"
         android:textSize="15sp"
         android:autofillHints="password"
-        android:background="@drawable/edittext" />
+        android:background="@drawable/edittext"
+        android:textColorHint="@color/black"
+        android:padding="8dp"/>
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:backgroundTint="@color/Menu"
         android:text="@string/button_register"
         android:textColor="@color/Background"
-        android:background="@drawable/rounded_button" />
+        android:background="@drawable/rounded_button"
+        android:layout_gravity="center_horizontal"/>
 
     <TextView
         android:id="@+id/tv_go_to_login"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:gravity="center_horizontal"
         android:text="@string/volver_login"
-        android:textColor="@color/Title" />
+        android:textColor="@color/Title"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
