@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SafeNav"
         tools:targetApi="31">
-<<<<<<< HEAD
+
 =======
 
         <meta-data
@@ -22,7 +22,7 @@
         <activity
             android:name=".Mapa"
             android:exported="true" />
->>>>>>> origin/Albert_03-06-2024__Mapa
+
         <activity
             android:name=".NavegarActivity"
             android:exported="false" />
