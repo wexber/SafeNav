@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MenuActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/fondo">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="30dp"
+                android:contentDescription="@string/logo_description"
+                android:gravity="start"
+                android:src="@drawable/salir"
+                android:layout_marginStart="15dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/bondrians"
+                android:gravity="center_horizontal"
+                android:text="@string/safe_nav_title"
+                android:textColor="@color/Menu"
+                android:textSize="60sp"
+                android:layout_marginStart="70dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_marginTop="15dp"
+                android:contentDescription="@string/logo_description"
+                android:gravity="end"
+                android:src="@drawable/logo" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="15dp"
+                android:backgroundTint="@color/Menu"
+                android:text="@string/button_navegar"
+                android:textColor="@color/Background"
+                android:textSize="15sp"
+                android:background="@drawable/rounded_button"
+                style="?android:attr/buttonBarButtonStyle"/>
+
+
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:backgroundTint="@color/Menu"
+                android:text="@string/button_ubicacion"
+                android:textColor="@color/Background"
+                android:textSize="15sp"
+                android:background="@drawable/rounded_button"
+                style="?android:attr/buttonBarButtonStyle" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            style="?android:attr/buttonBarButtonStyle">
+
+            <Button
+                android:id="@+id/button6"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/rounded_button"
+                android:backgroundTint="@color/Menu"
+                android:text="@string/button_routes"
+                android:textColor="@color/Background"
+                android:textSize="15sp"
+                tools:ignore="TextSizeCheck" />
+
+            <Button
+                android:id="@+id/button7"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:backgroundTint="@color/Menu"
+                android:text="@string/button_ajustes"
+                android:textColor="@color/Background"
+                android:textSize="15sp"
+                android:background="@drawable/rounded_button"
+                style="?android:attr/buttonBarButtonStyle" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

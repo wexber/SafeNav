@@ -1,0 +1,126 @@
+[
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/font_bondrians.otf.flat",
+        "source": "com.example.safenav.app-main-59:/font/bondrians.otf"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/font_roboto_regular.ttf.flat",
+        "source": "com.example.safenav.app-main-59:/font/roboto_regular.ttf"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_navegar.png.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/navegar.png"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/xml_data_extraction_rules.xml.flat",
+        "source": "com.example.safenav.app-main-59:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_logo.png.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/logo.png"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_ajustes.png.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/ajustes.png"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/layout_activity_menu.xml.flat",
+        "source": "com.example.safenav.app-main-59:/layout/activity_menu.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_rounded_button_menu.xml.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/rounded_button_menu.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_edittext.xml.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/edittext.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_ubicacion.png.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/ubicacion.png"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_historial.png.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/historial.png"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_salir.png.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/salir.png"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/layout_activity_navegar.xml.flat",
+        "source": "com.example.safenav.app-main-59:/layout/activity_navegar.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.example.safenav.app-main-59:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/xml_backup_rules.xml.flat",
+        "source": "com.example.safenav.app-main-59:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/drawable_rounded_button.xml.flat",
+        "source": "com.example.safenav.app-main-59:/drawable/rounded_button.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/layout_activity_registro.xml.flat",
+        "source": "com.example.safenav.app-main-59:/layout/activity_registro.xml"
+    },
+    {
+        "merged": "com.example.safenav.app-debug-57:/layout_activity_main.xml.flat",
+        "source": "com.example.safenav.app-main-59:/layout/activity_main.xml"
+    }
+]
