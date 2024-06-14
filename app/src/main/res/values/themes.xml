@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.SafeNav" parent="android:Theme.Material.Light.NoActionBar">
+
+        <item name="colorPrimary">@color/Menu</item>
+        <item name="colorPrimaryVariant">@color/Menu</item>
+        <item name="colorOnPrimary">@color/Background</item>
+
+        <item name="colorSecondary">@color/Info</item>
+        <item name="colorSecondaryVariant">@color/Title</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+    </style>
+</resources>

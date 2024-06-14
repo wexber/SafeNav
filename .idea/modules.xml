@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SafeNav.iml" filepath="$PROJECT_DIR$/.idea/modules/SafeNav.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SafeNav.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SafeNav.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SafeNav.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SafeNav.app.androidTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SafeNav.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SafeNav.app.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SafeNav.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SafeNav.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SafeNav.iml" filepath="$PROJECT_DIR$/.idea/SafeNav.iml" />
     </modules>
   </component>
 </project>
