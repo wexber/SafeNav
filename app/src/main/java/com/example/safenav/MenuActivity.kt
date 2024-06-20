@@ -41,6 +41,7 @@ class MenuActivity : AppCompatActivity() {
         }
 
 
+
         val btnCamera = findViewById<Button>(R.id.DeteccionSemaforos)
         btnCamera.setOnClickListener {
             val intent = Intent(this, Camara_Deteccion2::class.java)
@@ -58,8 +59,6 @@ class MenuActivity : AppCompatActivity() {
             val intent = Intent(this, ConfigurationActivity::class.java)
             startActivity(intent)
         }
-
-
 
 
     }
@@ -141,6 +140,7 @@ class MenuActivity : AppCompatActivity() {
             tvNombreUsuario.text = result
         }
     }
+
 
 
 }

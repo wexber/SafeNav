@@ -1,12 +1,14 @@
 package com.example.safenav
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
@@ -42,6 +44,7 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
     private lateinit var cameraExecutor: ExecutorService
     private var lastSpeakTime = 0L
     private val speakInterval = 5000L // Tiempo mínimo entre pronunciaciones en milisegundos
+    private var isAnalyzing = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,9 +72,34 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
+        // Configurar el botón para volver al menú
+        val btnVolverMenu = findViewById<Button>(R.id.btnVolverMenu)
+        btnVolverMenu.setOnClickListener {
+            isAnalyzing = false // Desactivar el análisis de imágenes
+            stopImageAnalysis()
+            releaseResources()
+
+            val intent = Intent(this, MenuActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+        }
+
     }
 
 
+    private fun stopImageAnalysis() {
+        isAnalyzing = false // Detener el análisis de imágenes
+        imageAnalyzer?.clearAnalyzer() // Limpiar el analizador de imágenes
+    }
+    private fun releaseResources() {
+        detector.clear()
+        cameraExecutor.shutdown()
+        if (::tts.isInitialized) {
+            tts.stop()
+            tts.shutdown()
+        }
+        cameraProvider?.unbindAll() // Liberar todos los casos de uso de la cámara
+    }
     override fun onInit(status: Int) {
         try {
             if (status == TextToSpeech.SUCCESS) {
@@ -183,7 +211,7 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
             startCamera()
         }
     }
-
+/*
     override fun onDestroy() {
         detector.clear()
         cameraExecutor.shutdown()
@@ -191,8 +219,16 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
             tts.stop()
             tts.shutdown()
         }
+        cameraProvider?.unbindAll()// Liberar todos los casos de uso de la cámara
         super.onDestroy()
     }
+
+ */
+override fun onDestroy() {
+    super.onDestroy()
+    stopImageAnalysis() // Detener el análisis de imágenes
+    releaseResources() // Liberar los recursos
+}
 
     override fun onResume() {
         super.onResume()
@@ -213,7 +249,9 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
 
     override fun onEmptyDetect() {
         runOnUiThread {
+            // Limpiar la vista de superposición
             binding.overlay.clear()
+            // Actualizar la vista de tiempo de inferencia
             binding.inferenceTime.text = "no se ha detectado semaforo"
         }
     }
@@ -236,5 +274,8 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
         }
     }
 
+    override fun onBackPressed() {
+        // No hacemos nada para desactivar el botón de retroceso
+    }
 
 }
