@@ -17,5 +17,6 @@
 
     <color name="color_gray">#b5b5b5</color>
     <color name="color_gray_light">#f5f5f5</color>
+    <color name="bounding_box_color">#234567</color>
 
 </resources>

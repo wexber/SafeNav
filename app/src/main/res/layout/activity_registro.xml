@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         tools:ignore="UseCompoundDrawables">
+
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -42,7 +43,6 @@
             android:src="@drawable/logo" />
     </LinearLayout>
 
-
     <TextView
         android:id="@+id/textView7"
         android:layout_width="350dp"
@@ -55,6 +55,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:id="@+id/et_nombre"
         android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
@@ -69,6 +70,22 @@
         android:padding="8dp"/>
 
     <EditText
+        android:id="@+id/et_apellido"
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="25dp"
+        android:hint="@string/hint_surname"
+        android:inputType="textPersonName"
+        android:textSize="15sp"
+        android:autofillHints="emailAddress"
+        android:background="@drawable/edittext"
+        android:textColorHint="@color/black"
+        android:padding="8dp" />
+
+    <EditText
+        android:id="@+id/et_email"
         android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
@@ -83,6 +100,7 @@
         android:padding="8dp" />
 
     <EditText
+        android:id="@+id/et_password"
         android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
@@ -97,6 +115,7 @@
         android:padding="8dp" />
 
     <EditText
+        android:id="@+id/et_rep_password"
         android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginStart="25dp"
@@ -111,7 +130,7 @@
         android:padding="8dp"/>
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/buttonRegister"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"

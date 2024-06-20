@@ -30,19 +30,26 @@ import java.util.Timer
 import java.util.TimerTask
 import android.speech.tts.TextToSpeech
 import java.util.Locale
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.SQLException
+import java.util.concurrent.Executors
 
 class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,GoogleMap.OnMyLocationClickListener {
 
-    private lateinit var map:GoogleMap
+    private lateinit var map: GoogleMap
     private val TAG = "MainActivity"
     private var timer: Timer? = null
     private lateinit var tts: TextToSpeech
     private val handler = Handler(Looper.getMainLooper())
-    companion object{
-        const val Request_Code_location=0
+    private val executor = Executors.newSingleThreadExecutor()
+
+    companion object {
+        const val Request_Code_location = 0
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
         private const val INTERVAL_TIME = 10000L
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -72,11 +79,33 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
                 LOCATION_PERMISSION_REQUEST_CODE
             )
         } else {
-
-            obtenerLugaresCercanos()
-            createFragment()// Asegúrate de crear el fragmento del mapa si no se ha creado.
-
+            val userId = obtenerIdUsuarioEnSesion()
+            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val provider: String? = locationManager.getBestProvider(Criteria(), true)
+            val location: Location? = provider?.let { locationManager.getLastKnownLocation(it) }
+            //obtenerLugaresCercanos()
+            //createFragment()// Asegúrate de crear el fragmento del mapa si no se ha creado.
+            location?.let {
+                val latitude = it.latitude
+                val longitude = it.longitude
+                val geocoder = Geocoder(this, Locale.getDefault())
+                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                val street = addresses?.get(0)?.thoroughfare // Nombre de la calle
+                if (userId != -1 && street != null) {
+                    saveLocationToDatabase(latitude, longitude, street, userId)
+                    obtenerLugaresCercanos()
+                    createFragment()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "No se pudo obtener el ID del usuario o la dirección",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
+
+
 
 
     }
@@ -102,6 +131,7 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
             }, 0, INTERVAL_TIME)
         }
     }
+
     // Método para detener la actualización periódica de la dirección
     private fun stopLocationUpdates() {
         // Detiene el Timer solo si está en uso
@@ -118,10 +148,12 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
             startLocationSpeech()
         }
     }
+
     private fun startLocationSpeech() {
         // Programa la lectura de la ubicación cada cierto tiempo
         handler.postDelayed(locationSpeechRunnable, INTERVAL_TIME)
     }
+
 
     private val locationSpeechRunnable = object : Runnable {
         override fun run() {
@@ -137,16 +169,76 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
             handler.postDelayed(this, INTERVAL_TIME)
         }
     }
+
+    private fun obtenerIdUsuarioEnSesion(): Int {
+        val sharedPreferences = getSharedPreferences("sesion", Context.MODE_PRIVATE)
+        return sharedPreferences.getInt("userId", -1)
+    }
+    // Dentro de la función saveLocationToDatabase, modifica el parámetro userId para que sea opcional y predeterminado al valor guardado al iniciar sesión
+    private fun saveLocationToDatabase(latitude: Double, longitude: Double, street: String?, userId: Int) {
+        executor.execute {
+            var connection: Connection? = null
+            try {
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver")
+
+                val azureUrl = "jdbc:jtds:sqlserver://safenav2.database.windows.net:1433;" +
+                        "databaseName=safenav;" +
+                        "user=adminsql@safenav2;" +
+                        "password=Al3xander#;" +
+                        "encrypt=true;" +
+                        "trustServerCertificate=false;" +
+                        "hostNameInCertificate=*.database.windows.net;" +
+                        "loginTimeout=30;" +
+                        "ssl=TLSv1.2;"
+
+                connection = DriverManager.getConnection(azureUrl)
+
+                synchronized(this) {
+                    val statement = connection.createStatement()
+                    val query = "INSERT INTO Ubicacion (Id_Usuario, Latitud, Longitud, Fecha_Hora, Nombre_Calle) VALUES ($userId, $latitude, $longitude, GETDATE(), '$street')"
+                    statement.executeUpdate(query)
+
+                    // Limpiar registros antiguos
+                    val cleanQuery = "DELETE FROM Ubicacion WHERE Fecha_Hora < DATEADD(day, -7, GETDATE())"
+                    statement.executeUpdate(cleanQuery)
+
+                    runOnUiThread {
+                        Toast.makeText(this, "Ubicación guardada", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: SQLException) {
+                Log.e(TAG, "Error al guardar la ubicación en la base de datos", e)
+                runOnUiThread {
+                    Toast.makeText(this, "Error al guardar la ubicación en la base de datos", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: ClassNotFoundException) {
+                Log.e(TAG, "Controlador JDBC no encontrado", e)
+                runOnUiThread {
+                    Toast.makeText(this, "Error: Controlador JDBC no encontrado", Toast.LENGTH_SHORT).show()
+                }
+            } finally {
+                try {
+                    connection?.close()
+                } catch (e: SQLException) {
+                    Log.e(TAG, "Error closing connection", e)
+                }
+            }
+        }
+    }
+
+
     override fun onPause() {
         super.onPause()
         // Detiene el Timer si está en uso
         stopLocationUpdates()
         stopLocationSpeech() // Detiene la lectura de la ubicación
     }
+
     private fun stopLocationSpeech() {
         // Detiene la lectura de la ubicación
         handler.removeCallbacks(locationSpeechRunnable)
     }
+
     // Método para obtener la dirección a partir de las coordenadas de ubicación
     private fun getAddressFromLocation(latitude: Double, longitude: Double) {
         val geocoder = Geocoder(this, Locale.getDefault())
@@ -156,13 +248,18 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
                 val address = addresses[0]
                 val street = address.thoroughfare // Nombre de la calle
 
-                // Utiliza TextToSpeech para pronunciar el nombre de la calle
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     tts.speak("Estás en: $street", TextToSpeech.QUEUE_FLUSH, null, null)
                 } else {
                     @Suppress("DEPRECATION")
                     tts.speak("Estás en: $street", TextToSpeech.QUEUE_FLUSH, null)
                 }
+
+                // Obtener el ID del usuario en sesión
+                val userId = obtenerIdUsuarioEnSesion()
+
+                // Guardar la ubicación y el nombre de la calle en la base de datos
+                saveLocationToDatabase(latitude, longitude, street, userId)
             } else {
                 Toast.makeText(this, "No se pudo obtener la dirección.", Toast.LENGTH_SHORT).show()
             }
@@ -178,24 +275,31 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
         // Definir los campos de lugar que deseas obtener
         val placeFields = listOf(Place.Field.NAME)
         // Obtener la ubicación actual y lugares cercanos
-        placesClient.findCurrentPlace(FindCurrentPlaceRequest.newInstance(placeFields)).addOnCompleteListener { task ->
-            if (task.isSuccessful && task.result != null) {
-                val places = task.result?.placeLikelihoods
-                if (places != null) {
-                    for (placeLikelihood in places) {
-                        val place = placeLikelihood.place
-                        Log.i(TAG, "Nombre del lugar: ${place.name}, Probabilidad: ${placeLikelihood.likelihood}")
+        placesClient.findCurrentPlace(FindCurrentPlaceRequest.newInstance(placeFields))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result != null) {
+                    val places = task.result?.placeLikelihoods
+                    if (places != null) {
+                        for (placeLikelihood in places) {
+                            val place = placeLikelihood.place
+                            Log.i(
+                                TAG,
+                                "Nombre del lugar: ${place.name}, Probabilidad: ${placeLikelihood.likelihood}"
+                            )
+                        }
+                    } else {
+                        Log.e(TAG, "Error al obtener la ubicación actual.")
                     }
-                } else {
-                    Log.e(TAG, "Error al obtener la ubicación actual.")
                 }
             }
-        }
     }
 
 
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -215,14 +319,15 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
     }
 
 
-    private fun createFragment(){
-        val mapFragment : SupportMapFragment =supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+    private fun createFragment() {
+        val mapFragment: SupportMapFragment =
+            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
 
     override fun onMapReady(googleMap: GoogleMap) {
-        map=googleMap
+        map = googleMap
         createMarker()
         map.setOnMyLocationButtonClickListener(this)
         map.setOnMyLocationClickListener(this)
@@ -230,10 +335,8 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
     }
 
 
-
-
     //Metodo para obtener la ubicacion en el mapa En tiempo real
-    private fun createMarker(){
+    private fun createMarker() {
         if (isLocationPermissionGranted()) {
             map.isMyLocationEnabled = true
             val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
@@ -252,17 +355,20 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
     }
 
     private fun isLocationPermissionGranted() =
-        ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
 
-    private fun Enablelocation(){
-        if(!::map.isInitialized) return
-        if(isLocationPermissionGranted()){
+    private fun Enablelocation() {
+        if (!::map.isInitialized) return
+        if (isLocationPermissionGranted()) {
             //permiso activado
-            map.isMyLocationEnabled= true
+            map.isMyLocationEnabled = true
             map.setOnMyLocationButtonClickListener(this)
             map.setOnMyLocationClickListener(this)
-        }else{
+        } else {
             //no activo los permisos
             requestlocationPermission()
 
@@ -270,41 +376,59 @@ class Mapa : FragmentActivity(),OnMapReadyCallback, GoogleMap.OnMyLocationButton
     }
 
 
-
-    private fun requestlocationPermission(){
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)){
+    private fun requestlocationPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        ) {
             Toast.makeText(this, "ve ajustes y activa los permisos", Toast.LENGTH_SHORT).show()
-        }else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),Request_Code_location)
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                Request_Code_location
+            )
         }
     }
 
     override fun onResumeFragments() {
         super.onResumeFragments()
-        if(!::map.isInitialized) return
-        if(isLocationPermissionGranted()){
-            map.isMyLocationEnabled= false
+        if (!::map.isInitialized) return
+        if (isLocationPermissionGranted()) {
+            map.isMyLocationEnabled = false
 
-            Toast.makeText(this,"Para activar la localización ve ajuste y acepta los permisos",Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Para activar la localización ve ajuste y acepta los permisos",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
-
-
 
 
     override fun onMyLocationButtonClick(): Boolean {
         return false
     }
 
+
     override fun onMyLocationClick(p0: Location) {
-        Toast.makeText(this,"Estás en ${p0.latitude},${p0.longitude} ",Toast.LENGTH_SHORT).show()
+        val latitude = p0.latitude
+        val longitude = p0.longitude
+        getAddressFromLocation(latitude, longitude)
+        Toast.makeText(
+            this,
+            "Ubicación guardada en la base de datos: ($latitude, $longitude)",
+            Toast.LENGTH_SHORT
+        ).show()
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
         // Detener la actualización de la ubicación cuando la actividad se destruye
         stopLocationUpdates()
+        executor.shutdown()
+
     }
-
-
 }

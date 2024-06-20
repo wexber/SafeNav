@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#EAF3FD"
+    >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ubicaciones Recientes"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:padding="16dp"
+        android:background="@drawable/rounded_corner_background"
+        android:textColor="#FFFFFF" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+    <ListView
+        android:id="@+id/recent_locations_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_background"
+        android:dividerHeight="2dp"
+        android:divider="@android:color/black"
+         />
+
+</LinearLayout>
