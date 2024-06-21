@@ -1,5 +1,6 @@
 package com.example.safenav.ui.theme
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.SystemClock
@@ -28,9 +29,22 @@ class Detector(
     private val detectorListener: DetectorListener
 ) {
 
+    // Agrega una lista de oyentes (listeners) para notificar cuando el intérprete está en ejecución
+    private val interpreterListeners = mutableListOf<InterpreterListener>()
+
+
+
+    interface InterpreterListener {
+        fun onInterpreterCompleted()
+        fun onInterpreterRunning()
+        fun onInterpreterStart()
+        fun onInterpreterError(error: String)
+    }
+
     private var interpreter: Interpreter? = null
     private var labels = mutableListOf<String>()
-
+    private var detectionInProgress = false
+    private var stopRequested = false
     private var tensorWidth = 0
     private var tensorHeight = 0
     private var numChannel = 0
@@ -87,10 +101,22 @@ class Detector(
     }
 
     fun clear() {
+
+        // Limpiar el TextToSpeech
+        textToSpeech?.stop()
+        textToSpeech?.shutdown()
+        textToSpeech = null
+
+        // Limpiar el Handler
+        uiHandler.removeCallbacksAndMessages(null)
+
+        // Cerrar el intérprete de TensorFlow Lite de forma segura
         interpreter?.close()
         interpreter = null
-    }
+        // Detener la cámara si se está utilizando para la detección de objetos
 
+    }
+/*
     // Dentro de la función detect()
     fun detect(frame: Bitmap) {
         interpreter ?: return
@@ -125,6 +151,108 @@ class Detector(
     }
 
 
+
+ */
+
+/*
+    fun detect(frame: Bitmap) {
+        try {
+            Log.d(TAG, "Iniciando detección...")
+            interpreter ?: return
+            if (tensorWidth == 0 || tensorHeight == 0 || numChannel == 0 || numElements == 0) return
+            Log.e(TAG, "Dimensiones de tensor inválidas")
+            val inferenceTime = SystemClock.uptimeMillis()
+
+            val resizedBitmap = Bitmap.createScaledBitmap(frame, tensorWidth, tensorHeight, false)
+
+            val tensorImage = TensorImage(DataType.FLOAT32)
+            tensorImage.load(resizedBitmap)
+            val processedImage = imageProcessor.process(tensorImage)
+            val imageBuffer = processedImage.buffer
+
+            val output = TensorBuffer.createFixedSize(intArrayOf(1, numChannel, numElements), OUTPUT_IMAGE_TYPE)
+            synchronized(interpreterLock) {
+                // Ejecutar el intérprete de TensorFlow Lite
+                Log.d(TAG, "Ejecutando el intérprete...")
+                interpreter?.run(imageBuffer, output.buffer)
+                Log.d(TAG, "Intérprete completado")
+            }
+            val bestBoxes = bestBox(output.floatArray)
+            val elapsedTime = SystemClock.uptimeMillis() - inferenceTime
+
+            uiHandler.post {
+                if (bestBoxes.isNullOrEmpty()) {
+                    detectorListener.onEmptyDetect()
+                } else {
+                    detectorListener.onDetect(bestBoxes, elapsedTime)
+                }
+            }
+            Log.d(TAG, "Detección completada")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error durante la inferencia: ${e.message}", e)
+        }
+    }
+
+ */
+
+    fun detect(frame: Bitmap) {
+        if (stopRequested) {
+            Log.d(TAG, "Detección detenida")
+            return
+        }
+
+        synchronized(interpreterLock) {
+            if (detectionInProgress) {
+                Log.d(TAG, "Detección en curso, ignora la nueva solicitud")
+                return
+            }
+
+            interpreter ?: return
+            if (tensorWidth == 0 || tensorHeight == 0 || numChannel == 0 || numElements == 0) return
+            val inferenceTime = SystemClock.uptimeMillis()
+
+            val resizedBitmap = Bitmap.createScaledBitmap(frame, tensorWidth, tensorHeight, false)
+            val tensorImage = TensorImage(DataType.FLOAT32)
+            tensorImage.load(resizedBitmap)
+            val processedImage = imageProcessor.process(tensorImage)
+            val imageBuffer = processedImage.buffer
+
+            // Initialize output tensor
+            val output = TensorBuffer.createFixedSize(intArrayOf(1, numChannel, numElements), OUTPUT_IMAGE_TYPE)
+
+            detectionInProgress = true
+
+            try {
+                Log.d(TAG, "Ejecutando el intérprete...")
+                interpreter?.run(imageBuffer, output.buffer)
+                Log.d(TAG, "Intérprete completado")
+
+                val bestBoxes = bestBox(output.floatArray)
+                val elapsedTime = SystemClock.uptimeMillis() - inferenceTime
+
+                uiHandler.post {
+                    if (bestBoxes.isNullOrEmpty()) {
+                        detectorListener.onEmptyDetect()
+                    } else {
+                        detectorListener.onDetect(bestBoxes, elapsedTime)
+                    }
+                }
+                Log.d(TAG, "Detección completada")
+            } catch (e: IllegalStateException) {
+                Log.e(TAG, "Error durante la inferencia: ${e.message}", e)
+                notifyInterpreterError(e.message ?: "Error desconocido")
+            } finally {
+                detectionInProgress = false
+                if (stopRequested) {
+                    notifyInterpreterCompleted()
+                }
+            }
+        }
+    }
+
+    fun isDetectionInProgress(): Boolean {
+        return detectionInProgress
+    }
     private fun bestBox(array: FloatArray) : List<BoundingBox>? {
 
         val boundingBoxes = mutableListOf<BoundingBox>()
@@ -211,6 +339,51 @@ class Detector(
         fun onDetect(boundingBoxes: List<BoundingBox>, inferenceTime: Long)
     }
 
+
+    // Método para notificar a todos los oyentes cuando el intérprete está en ejecución
+    private fun notifyInterpreterRunning() {
+        for (listener in interpreterListeners) {
+            listener.onInterpreterRunning()
+        }
+    }
+
+    // Método para notificar a todos los oyentes cuando el intérprete ha completado su ejecución
+    private fun notifyInterpreterCompleted() {
+        for (listener in interpreterListeners) {
+            listener.onInterpreterCompleted()
+        }
+    }
+    private fun notifyInterpreterError(error: String) {
+        for (listener in interpreterListeners) {
+            listener.onInterpreterError(error)
+        }
+    }
+    fun registerInterpreterListener(listener: InterpreterListener) {
+        interpreterListeners.add(listener)
+    }
+
+    fun unregisterInterpreterListener(listener: InterpreterListener) {
+        interpreterListeners.remove(listener)
+    }
+
+    // Método para iniciar el intérprete
+    fun startInterpreter() {
+        // Lógica para iniciar el intérprete...
+
+        // Notificar a los oyentes que el intérprete está en ejecución
+        notifyInterpreterRunning()
+    }
+
+    // Método para detener el intérprete
+    fun stopInterpreter() {
+        stopRequested = true
+        if (!detectionInProgress) {
+            notifyInterpreterCompleted()
+        }
+    }
+
+
+
     companion object {
         private const val INPUT_MEAN = 0f
         private const val INPUT_STANDARD_DEVIATION = 255f
@@ -218,5 +391,7 @@ class Detector(
         private val OUTPUT_IMAGE_TYPE = DataType.FLOAT32
         private const val CONFIDENCE_THRESHOLD = 0.5F
         private const val IOU_THRESHOLD = 0.5F
+        private val interpreterLock = Any()
     }
+
 }

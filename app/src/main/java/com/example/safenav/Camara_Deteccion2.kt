@@ -6,9 +6,12 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
@@ -26,15 +29,18 @@ import com.example.safenav.databinding.ActivityCamaraDeteccionBinding
 import com.example.safenav.ui.theme.BoundingBox
 import com.example.safenav.ui.theme.Detector
 import com.example.safenav.ui.theme.OverlayView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToSpeech.OnInitListener {
+class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToSpeech.OnInitListener,Detector.InterpreterListener {
 
     private lateinit var binding: ActivityCamaraDeteccionBinding
     private val isFrontCamera = false
-
+    private var interpreterCompleted = false
     private var preview: Preview? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
@@ -64,6 +70,8 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
         )
         detector.setup()
 
+
+
         if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -72,26 +80,153 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Configurar el botón para volver al menú
+        /*
+
         val btnVolverMenu = findViewById<Button>(R.id.btnVolverMenu)
         btnVolverMenu.setOnClickListener {
-            isAnalyzing = false // Desactivar el análisis de imágenes
-            stopImageAnalysis()
-            releaseResources()
-
-            val intent = Intent(this, MenuActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(intent)
+            // Iniciar una coroutine para ejecutar la función apagarCamara() de manera asíncrona
+            CoroutineScope(Dispatchers.Main).launch {
+                // Liberar los recursos de TensorFlow Lite
+                detector.clear()
+                // Esperar a que se complete la ejecución de la función apagarCamara()
+                apagarCamara()
+                // Llamar a las otras funciones después de que apagarCamara() haya terminado
+                releaseResources()
+                navigateToMenu()
+            }
         }
+
+         */
+
+        detector.registerInterpreterListener(object : Detector.InterpreterListener {
+            override fun onInterpreterError(error: String) {
+                Log.e("Camera_Deteccion2", "Error del intérprete: $error")
+                navigateToMenu()
+            }
+
+            override fun onInterpreterCompleted() {
+                // Manejar cuando el intérprete completa su ejecución
+            }
+
+            override fun onInterpreterRunning() {
+                // Manejar cuando el intérprete está en ejecución
+            }
+
+            override fun onInterpreterStart() {
+                // Manejar cuando el intérprete inicia su ejecución
+            }
+        })
+
+        val btnVolverMenu = findViewById<Button>(R.id.btnVolverMenu)
+        btnVolverMenu.setOnClickListener {
+            // Detener el intérprete si está en curso
+            if (detector.isDetectionInProgress()) {
+                detector.stopInterpreter()
+            }
+            // Iniciar una coroutine para ejecutar la función apagarCamara() de manera asíncrona
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    // Liberar los recursos de TensorFlow Lite
+                    detector.clear()
+                    // Esperar a que se complete la ejecución de la función apagarCamara()
+                    apagarCamara()
+                    // Llamar a las otras funciones después de que apagarCamara() haya terminado
+                    releaseResources()
+                    navigateToMenu()
+                } catch (e: Exception) {
+                    Log.e("Camera_Deteccion2", "Error al detener la detección: ${e.message}", e)
+                    navigateToMenu()
+                }
+            }
+        }
+
+
+
+        // Configurar el botón para apagar la cámara
+        val btnApagarCamara = findViewById<Button>(R.id.btnApagarCamara)
+        btnApagarCamara.setOnClickListener {
+            apagarCamara()
+        }
+
 
     }
 
+
+    // Configura un listener para manejar los errores de la detección
+
+
+
+    override fun onInterpreterCompleted() {
+        // Realizar acciones necesarias cuando el intérprete ha completado su ejecución
+        interpreterCompleted = true
+    }
+
+    // Implementación de los métodos de InterpreterListener
+    override fun onInterpreterRunning() {
+        // Realizar acciones necesarias cuando el intérprete está en ejecución
+    }
+
+
+    override fun onInterpreterStart() {
+        // Realizar acciones necesarias cuando el intérprete se inicia
+    }
+
+    override fun onInterpreterError(error: String) {
+        // Realizar acciones necesarias en caso de error en el intérprete
+    }
+
+
+
+    private fun apagarCamara() {
+        try {
+            Log.d(TAG, "Iniciando apagado de cámara...")
+            isAnalyzing = false // Desactivar el análisis de imágenes
+
+            // Detener el análisis de imágenes
+            imageAnalyzer?.let {
+                Log.d(TAG, "Deteniendo el análisis de imágenes...")
+                it.clearAnalyzer()
+                imageAnalyzer = null
+            }
+
+            // Detener TextToSpeech
+            if (::tts.isInitialized) {
+                try {
+                    Log.d(TAG, "Deteniendo TextToSpeech...")
+                    tts.stop()
+                    tts.shutdown()
+                } catch (e: IllegalArgumentException) {
+                    Log.w(TAG, "TextToSpeech no está vinculado: ${e.message}")
+                }
+            }
+
+            // Detener y liberar la cámara
+            cameraProvider?.let {
+                Log.d(TAG, "Deteniendo y liberando la cámara...")
+                it.unbindAll()
+            }
+
+            // Apagar el executor de la cámara
+            if (!cameraExecutor.isShutdown) {
+                Log.d(TAG, "Apagando el executor de la cámara...")
+                cameraExecutor.shutdown()
+            }
+
+            // Limpiar el detector
+            detector.clear()
+
+            Log.d(TAG, "Cámara apagada correctamente")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error al apagar la cámara: ${e.message}", e)
+        }
+    }
 
     private fun stopImageAnalysis() {
         isAnalyzing = false // Detener el análisis de imágenes
         imageAnalyzer?.clearAnalyzer() // Limpiar el analizador de imágenes
     }
     private fun releaseResources() {
+        apagarCamara()
         detector.clear()
         cameraExecutor.shutdown()
         if (::tts.isInitialized) {
@@ -100,6 +235,18 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
         }
         cameraProvider?.unbindAll() // Liberar todos los casos de uso de la cámara
     }
+
+    private fun navigateToMenu() {
+        try {
+            val intent = Intent(this, MenuActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+            finish() // Finaliza la actividad actual
+        } catch (e: Exception) {
+            Log.e(TAG, "Error al iniciar la actividad del menú", e)
+        }
+    }
+
     override fun onInit(status: Int) {
         try {
             if (status == TextToSpeech.SUCCESS) {
@@ -211,24 +358,13 @@ class Camara_Deteccion2 : AppCompatActivity(), Detector.DetectorListener,TextToS
             startCamera()
         }
     }
-/*
-    override fun onDestroy() {
-        detector.clear()
-        cameraExecutor.shutdown()
-        if (::tts.isInitialized) {
-            tts.stop()
-            tts.shutdown()
-        }
-        cameraProvider?.unbindAll()// Liberar todos los casos de uso de la cámara
-        super.onDestroy()
-    }
 
- */
-override fun onDestroy() {
-    super.onDestroy()
-    stopImageAnalysis() // Detener el análisis de imágenes
-    releaseResources() // Liberar los recursos
-}
+    override fun onDestroy() {
+        stopImageAnalysis() // Detener el análisis de imágenes
+        releaseResources() // Liberar los recursos
+        super.onDestroy()
+        detector.clear()
+    }
 
     override fun onResume() {
         super.onResume()
@@ -242,9 +378,9 @@ override fun onDestroy() {
     companion object {
         private const val TAG = "Camera"
         private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = mutableListOf(
+        private val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.CAMERA
-        ).toTypedArray()
+        )
     }
 
     override fun onEmptyDetect() {
@@ -260,7 +396,6 @@ override fun onDestroy() {
         runOnUiThread {
             binding.overlay.clear()
             binding.overlay.setResults(boundingBoxes)
-
             binding.inferenceTime.text = "${inferenceTime}ms"
         }
     }
